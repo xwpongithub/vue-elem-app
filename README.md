@@ -1,6 +1,6 @@
 # vue-elem-app
 
-> 基于vue2.3.x构建的elements外卖APP,基于![高仿饿了么外卖APP](https://github.com/ustbhuangyi/vue-sell)
+> 基于vue2.3.x构建的elements外卖APP，基于:https://github.com/ustbhuangyi/vue-sell
 
 # 在原基础上做出的改变：
 
