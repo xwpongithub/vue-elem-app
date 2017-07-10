@@ -47,7 +47,7 @@
     <div class="shopping-cart-list" v-show="listShow">
        <div class="list-header">
          <h1 class="title">购物车</h1>
-         <span class="empty">清空</span>
+         <span class="empty" @click="empty">清空</span>
        </div>
        <div class="list-content" ref="listContent">
          <ul>
@@ -163,6 +163,11 @@
         }
       },
       methods: {
+        empty() {
+          this.selectFoods.forEach((food) => {
+            food.count = 0;
+          });
+        },
         toggleList() {
           if (!this.totalCount) {
             return;
@@ -229,7 +234,7 @@
       }
     };
 </script>
-<style lang="stylus" rel="stylesheet/stylus">
+<style scoped lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/mixin.styl";
 
   .shopping-cart
@@ -341,7 +346,7 @@
       transform: translate3d(0, -100%, 0)
       &.fold-enter-active, &.fold-leave-active
         transition: all 0.5s
-      &.fold-enter, &.fold-leave-active
+      &.fold-enter, &.fold-leave-to
         transform: translate3d(0, 0, 0)
       .list-header
         height:40px

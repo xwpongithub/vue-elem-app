@@ -13,6 +13,7 @@
 </template>
 <script type="text/ecmascript-6">
     import Vue from 'vue';
+    import {hasTouch} from '../../common/js/utils';
 
     export default {
       props: {
@@ -28,7 +29,7 @@
       },
       methods: {
         addToCart(e) {
-          if (!e._constructed) {
+          if (!hasTouch && e._constructed) {
             return;
           }
           if (!this.food.count) {
@@ -51,7 +52,7 @@
           this.$emit('addToCart', target);
         },
         decreaseOutCart(e) {
-          if (!e._constructed) {
+          if (!hasTouch && e._constructed) {
             return;
           }
           if (this.food.count) {
@@ -94,7 +95,7 @@
         transform: rotate(0)
       &.move-enter-active, &.move-leave-active
         transition: all 0.4s linear
-      &.move-enter, &.move-leave-active
+      &.move-enter, &.move-leave-to
         opacity:0
         transform: translate3d(24px, 0, 0)
         .inner

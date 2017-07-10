@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @touchmove.prevent>
      <v-header :seller="seller"/>
      <div class="tabs">
        <ul class="tabs-content border-1px">
@@ -52,7 +52,7 @@ export default {
 };
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style scoped lang="stylus" rel="stylesheet/stylus">
   @import './common/stylus/mixin.styl';
   #app
     height:100%

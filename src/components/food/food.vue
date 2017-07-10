@@ -81,7 +81,7 @@
     import CartControl from '../cartcontrol/cartcontrol';
     import Split from '../split/split';
     import RatingSelect from '../ratingselect/ratingselect';
-    import {formatDate} from '../../common/js/utils';
+    import {formatDate, hasTouch} from '../../common/js/utils';
 
     // const POSITIVE = 0;
     // const NEGATIVE = 1;
@@ -143,7 +143,7 @@
           }
         },
         addFirstFood(e) {
-          if (!e._constructed) {
+          if (!hasTouch && e._constructed) {
             return;
           }
           this.$emit('addToCart', e.target);
@@ -176,7 +176,7 @@
       }
     };
 </script>
-<style lang="stylus" rel="stylesheet/stylus">
+<style scoped lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/mixin.styl";
 
   .detail-food
@@ -190,7 +190,7 @@
     transform: translate3d(0, 0, 0)
     &.move-enter-active, &.move-leave-active
       transition: all 0.2s linear
-    &.move-enter, &.move-leave-active
+    &.move-enter, &.move-leave-to
       transform: translate3d(100%, 0, 0)
     // 黑科技：用padding-top:100%和height:0来防止图片加载后高度抖动
     .food-content
@@ -256,7 +256,7 @@
         background-color: rgb(0,160,220)
         &.fade-enter-active, &.fade-leave-active
           transition: all 0.2s
-        &.fade-enter, &.fade-leave-active
+        &.fade-enter, &.fade-leave-to
           opacity: 0
           z-index: -1
     .info

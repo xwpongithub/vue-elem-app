@@ -14,12 +14,12 @@
 
     <!--右侧内容区-->
     <div class="foods-wrapper">
-      <div class="fixed-title" ref="fixedTitle" v-show="fixedTitleShow">
-        <h1 class="title food-title-list-hook">{{fixedTitleText}}</h1>
+      <div class="fixed-title" ref="fixed" v-show="fixedTitle">
+        <h1 class="title food-title-list-hook">{{fixedTitle}}</h1>
       </div>
       <div class="wrapper-content" ref="foodsWrapper">
         <ul>
-          <li class="food-list food-list-hook" v-for="(item,index) in goods" :key="'foods-'+index">
+          <li class="food-list food-list-hook" v-for="(item,index) in goods" :key="'foods-'+index" ref="listGroup">
             <h1 class="title food-title-list-hook">{{item.name}}</h1>
             <ul>
 
@@ -69,8 +69,10 @@
     import CartControl from '../cartcontrol/cartcontrol';
     import Food from '../food/food';
     import Price from '../price/price';
+    import {hasTouch} from '../../common/js/utils';
 
     const SUCCESS_STATUS = 0;
+    const TITLE_HEIGHT = 26;
 
     export default {
       props: {
@@ -81,26 +83,13 @@
       data() {
         return {
           goods: [],
-          listHeight: [],
-          titleListHeight: [],
-          scrollY: 0,
-          fixedTitleText: '',
-          fixedTitleShow: false,
-          currentTitleIndex: 0,
+          scrollY: -1,
+          currentIndex: 0,
+          diff: -1,
           selectedFood: {}
         };
       },
       computed: {
-        currentIndex() {
-          for (let i = 0; i < this.listHeight.length; i++) {
-            let height1 = this.listHeight[i];
-            let height2 = this.listHeight[i + 1];
-            if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
-                return i;
-            }
-          }
-          return 0;
-        },
         selectFoods() {
           let foods = [];
           this.goods.forEach((good) => {
@@ -111,16 +100,47 @@
             });
           });
           return foods;
+        },
+        fixedTitle() {
+          if (this.scrollY > 0) {
+            return '';
+          }
+          return this.goods[this.currentIndex] ? this.goods[this.currentIndex].name : '';
         }
       },
       watch: {
-        currentIndex(index) {
-          let menuList = this.$refs.menuWrapper.getElementsByClassName('menu-item-hook');
-          let el = menuList[index];
-          this.menuWrapper.scrollToElement(el);
+        scrollY(newY) {
+          const listHeight = this.listHeight;
+          // 当滚动到顶部，newY>0
+          if (newY > 0) {
+            this.currentIndex = 0;
+            return;
+          }
+          // 在中间部分滚动
+          for (let i = 0; i < listHeight.length - 1; i++) {
+            let height1 = listHeight[i];
+            let height2 = listHeight[i + 1];
+            if (-newY >= height1 && -newY < height2) {
+              this.currentIndex = i;
+              this.diff = height2 + newY;
+              return;
+            }
+          }
+          // 当滚动到底部，且-newY大于最后一个元素的上限
+          this.currentIndex = listHeight.length - 2;
+        },
+        diff(newVal) {
+          let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0;
+          if (this.fixedTop === fixedTop) {
+            return;
+          }
+          this.fixedTop = fixedTop;
+          this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`;
         }
       },
       created() {
+        this.touch = {};
+        this.listHeight = [];
         this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
         axios.get('/api/goods').then((response) => {
           if (response.data.status === SUCCESS_STATUS) {
@@ -134,8 +154,7 @@
       },
       methods: {
         selectMenu(index, e) {
-          // bscroll派发的事件这个值为true
-          if (!e._constructed) {
+          if (!hasTouch && e._constructed) {
             return;
           }
           let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
@@ -143,15 +162,13 @@
           this.foodsWrapper.scrollToElement(el);
         },
         selectFood(food, e) {
-          if (!e._constructed) {
+          if (!hasTouch && e._constructed) {
             return;
           }
           this.selectedFood = food;
           this.$refs.foodDetail.showDetailPanel();
         },
         _initScroll() {
-          let firstWrapper = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')[this.currentTitleIndex];
-          this.fixedTitleText = firstWrapper.querySelector('h1.title').innerText;
           this.menuWrapper = new BScroll(this.$refs.menuWrapper, {
             click: true
           });
@@ -160,52 +177,25 @@
             probeType: 3
           });
           this.foodsWrapper.on('scroll', (pos) => {
-            this.scrollY = Math.abs(Math.round(pos.y));
-            if (pos.y >= 0) {
-              this.fixedTitleShow = false;
-            } else {
-              this.fixedTitleShow = true;
-            }
-            let fixedTitleHeight = this.$refs.fixedTitle.offsetHeight;
-            this.fixedTitleHeight = fixedTitleHeight;
-            this.currentTitleIndex = this._getFixedListTitleIndex();
-            let currentFoodsWrapper = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')[this.currentTitleIndex];
-            this.fixedTitleText = currentFoodsWrapper.querySelector('h1.title').innerText;
+            this.scrollY = pos.y;
           });
         },
         _calculateHeight() {
-            let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
-            let height = 0;
+          this.listHeight = [];
+          const list = this.$refs.listGroup;
+          let height = 0;
+          this.listHeight.push(height);
+          for (let i = 0; i < list.length; i++) {
+            let item = list[i];
+            height += item.clientHeight;
             this.listHeight.push(height);
-            for (let i = 0; i < foodList.length; i++) {
-              let item = foodList[i];
-              height += item.clientHeight;
-              this.listHeight.push(height);
-            }
-            let foodTitleList = this.$refs.foodsWrapper.getElementsByClassName('food-title-list-hook');
-            for (let i = 0; i < foodTitleList.length; i++) {
-              this.titleListHeight.push(foodTitleList[i].offsetTop);
-            }
-        },
-        _getFixedListTitleIndex() {
-          for (let i = 0; i < this.titleListHeight.length; i++) {
-            let height1 = this.titleListHeight[i];
-            let height2 = this.titleListHeight[i + 1];
-            // let height1 = this.titleListHeight[i] - this.fixedTitleHeight; // 待加入动画fixedTitle的上移动画处理
-            // let height2 = this.titleListHeight[i + 1] - this.fixedTitleHeight;
-            if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
-                return i;
-            }
           }
-          return 0;
         },
         _drop(el) {
           // 让动画晚一点执行，避免出现卡顿,体验优化，异步执行下落动画
-          this.$nextTick(() => {
-            setTimeout(() => {
-              this.$refs.shopcart.drop(el);
-            }, 20);
-          });
+          setTimeout(() => {
+            this.$refs.shopcart.drop(el);
+          }, 20);
         },
         handleAddToCart(el) {
           this._drop(el);
@@ -219,7 +209,7 @@
       }
     };
 </script>
-<style lang="stylus" rel="stylesheet/stylus">
+<style scoped lang="stylus" rel="stylesheet/stylus">
   @import '../../common/stylus/mixin.styl';
 
  .goods

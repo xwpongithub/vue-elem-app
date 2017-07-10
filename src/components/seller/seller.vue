@@ -83,7 +83,7 @@
     import star from '../star/star';
     import split from '../split/split';
     import BScroll from 'better-scroll';
-    import {saveToLocal, loadFromLocal} from '../../common/js/utils';
+    import {saveToLocal, loadFromLocal, hasTouch} from '../../common/js/utils';
 
     export default {
       props: {
@@ -122,8 +122,8 @@
         }
       },
       methods: {
-        toggleFavorite(event) {
-          if (!event._constructed) {
+        toggleFavorite(e) {
+          if (!hasTouch && e._constructed) {
             return;
           }
           this.favorite = !this.favorite;
@@ -164,7 +164,7 @@
       }
     };
 </script>
-<style lang="stylus" rel="stylesheet/stylus">
+<style scoped lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/mixin.styl";
 
   .seller

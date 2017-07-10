@@ -70,3 +70,5 @@ export function queryParse() {
   }
   return obj;
 }
+
+export const hasTouch = 'ontouchstart' in window;

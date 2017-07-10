@@ -57,23 +57,17 @@
       },
       methods: {
         select(type, e) {
-          if (!e._constructed) {
-            return;
-          }
           this.$emit('update:selectType', type);
           this.$emit('refresh');
         },
         toggleContent(e) {
-          if (!e._constructed) {
-            return;
-          }
           this.$emit('update:onlyContent', !this.onlyContent);
           this.$emit('refresh');
         }
       }
     };
 </script>
-<style lang="stylus" rel="stylesheet/stylus">
+<style scoped lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/mixin.styl";
 
   .rating-select
