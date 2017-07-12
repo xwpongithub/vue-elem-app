@@ -1,6 +1,6 @@
 # vue-elem-app
 
-> 基于vue2.3.x构建的elements外卖APP，基于:https://github.com/ustbhuangyi/vue-sell
+> 使用vue2.3.x构建的elements外卖APP，基于:https://github.com/ustbhuangyi/vue-sell
 
 # 在原基础上做出的改变：
 
@@ -24,3 +24,7 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
+
+## 打包发布
+
+dist-server目录下的即为打包后发布运行的脚本，进入此目录，使用命令npm i安装下express后，启动服务器:node app，之后在浏览器输入http://localhost:3000即可看到效果
