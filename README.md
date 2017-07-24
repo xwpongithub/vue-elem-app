@@ -28,5 +28,12 @@ npm run build --report
 ```
 
 ## 打包发布
+先调用npm run build 打包js等文件  
 
-dist-server目录下的即为打包后发布运行的脚本，进入此目录，使用命令npm i安装下express后，启动服务器:node app，之后在浏览器输入http://localhost:3000即可看到效果
+dist-server目录下的即为打包后发布运行的脚本，进入此目录，使用命令npm i安装下express后，将dist目录拷贝到dist-server目录中，之后启动服务器:
+node app  
+
+在浏览器输入:    
+http://localhost:3000  
+
+即可看到效果
