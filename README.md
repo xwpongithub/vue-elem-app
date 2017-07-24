@@ -2,6 +2,8 @@
 
 > 使用vue2.3.x构建的elements外卖APP，基于:https://github.com/ustbhuangyi/vue-sell
 
+![vue-elem-app preview](./demo.gif)
+
 # 在原基础上做出的改变：
 
 * 运用了vue 2.3.x版本后添加的.sync语法糖
