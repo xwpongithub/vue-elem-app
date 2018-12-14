@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "amfe-flexible": "^2.2.1",
+    "axios": "^0.18.0",
     "cube-ui": "~1.12.1",
+    "good-storage": "^1.1.0",
     "vue": "^2.5.21"
   },
   "devDependencies": {

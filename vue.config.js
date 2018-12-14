@@ -1,4 +1,9 @@
+const path = require('path')
 const {seller, goods, ratings} = require('./data.json')
+
+function resolve(dir) {
+  return path.join(__dirname, dir)
+}
 
 module.exports = {
   css: {
@@ -20,17 +25,21 @@ module.exports = {
   devServer: {
     before(app) {
       app.get('/api/seller', (req, res) => res.json({
-        code: 0,
+        errno: 0,
         data: seller
       }))
       app.get('/api/goods', (req, res) => res.json({
-        code: 0,
+        errno: 0,
         data: goods
       }))
       app.get('/api/ratings', (req, res) => res.json({
-        code: 0,
+        errno: 0,
         data: ratings
       }))
     }
+  },
+  chainWebpack(config) {
+    config.resolve.alias.set('components', resolve('src/components'))
+    config.resolve.alias.set('common', resolve('src/common'))
   }
 }
