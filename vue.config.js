@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const {seller, goods, ratings} = require('./data.json')
 
 function resolve(dir) {
@@ -41,5 +42,7 @@ module.exports = {
   chainWebpack(config) {
     config.resolve.alias.set('components', resolve('src/components'))
     config.resolve.alias.set('common', resolve('src/common'))
+    config.plugin('context')
+      .use(webpack.ContextReplacementPlugin, [/moment[/\\]locale$/, /zh-cn/])
   }
 }
